@@ -8,7 +8,22 @@ import datetime
 from requests.adapters import HTTPAdapter
 import re
 import js2py
+import os
+import configparser
 
+def loadConfig():
+    global TOKEN
+    global REGXEX
+    global CHAT_ID
+    config = configparser.ConfigParser()
+    current_dir = os.path.split(os.path.realpath(__file__))[0]
+    config.read(os.path.join(current_dir, '.ini'))
+    TOKEN = config['telegram']['token']
+    CHAT_ID = config['telegram']['chat_id']
+    REGXEX = config['filter']['regex']
+    print(TOKEN)
+    print(CHAT_ID)
+    print(REGXEX)
 
 # 获得cookie
 def getcookies():
@@ -71,7 +86,7 @@ def mark_down(content):
 def post(chat_id, text):
     try:
         text = parse.quote(text)
-        post_url = 'https://api.telegram.org/bot********************_Lg65aNPbt78nsAgb0/sendMessage' \
+        post_url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage' \
                    '?parse_mode=MarkdownV2&chat_id={0}&text={1}'.format(chat_id, text)
         headers = {
             'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.76 Mobile Safari/537.36'}
@@ -115,7 +130,7 @@ def master(r):
                 text = '主        题：' + "***{}***".format(mark_down(name)) + '\n' + '发  布  者：[{0}]({1})'.format(mark_down(author[i + 1]), url_author) + '\n' + '时        间：' + time2 + '\n' + '内容预览：[点击查看——{0}]({1})'.format(content_2, url_list)
                 print(text)
                 # 修改为自己的想推送的ID
-                post('*********', text)
+                post(CHAT_ID, text)
             else:
                 pass
         else:
@@ -200,6 +215,7 @@ headers = {
 url_hostloc = "https://www.hostloc.com/forum.php?mod=forumdisplay&fid=45&filter=author&orderby=dateline"
 
 while True:
+        loadConfig()
         try:
             # 网站要求js验证(无法预览网页内容）
             cookiestr = getcookies()
@@ -221,7 +237,7 @@ while True:
                 r = s.get(url, headers=headers)
             master_1(r)
             # 多少秒抓取一次网站，自己设定，不要太小，会被ban ip的
-            time.sleep(20)
+            time.sleep(30)
         except Exception as e:
             try:
                 # 网站不要求js验证
