@@ -11,19 +11,18 @@ import js2py
 import os
 import configparser
 
-def loadConfig():
+
+def load_config():
     global TOKEN
-    global REGXEX
+    global REGEX
     global CHAT_ID
     config = configparser.ConfigParser()
     current_dir = os.path.split(os.path.realpath(__file__))[0]
     config.read(os.path.join(current_dir, '.ini'))
-    TOKEN = config['telegram']['token']
+    TOKEN = config['telegram']['bot_token']
     CHAT_ID = config['telegram']['chat_id']
-    REGXEX = config['filter']['regex']
-    print(TOKEN)
-    print(CHAT_ID)
-    print(REGXEX)
+    REGEX = config['filter']['regex']
+
 
 # 获得cookie
 def getcookies():
@@ -112,25 +111,28 @@ def master(r):
             if str(href[i].replace("\r\n", "")) not in hostloc_list:
                 hostloc_list.add(str(href[i].replace("\r\n", "")))
                 name = href[i].replace("\r\n", "")
-                # 文章链接
-                # print(i)
-                k = i + 1
-                # print(k)
-                url_list = "https://www.hostloc.com/{}".format(href_list[i])
-                # 作者id链接
-                url_author = "https://www.hostloc.com/{}".format(author_url[k])
-                # 时间戳
-                time_1 = time.strftime("%Y-%m-%d    %H:%M:%S", time.localtime())
-                date_1 = get_week_day(datetime.datetime.now())
-                time_2 = time_1 + '    ' + date_1 + '    '
-                time2 = str(time_2).replace('-', '\\-')
-                # 获得预览内容
-                # print(get_content(url_list))
-                content_2 = mark_down(get_content(url_list))
-                text = '主        题：' + "***{}***".format(mark_down(name)) + '\n' + '发  布  者：[{0}]({1})'.format(mark_down(author[i + 1]), url_author) + '\n' + '时        间：' + time2 + '\n' + '内容预览：[点击查看——{0}]({1})'.format(content_2, url_list)
-                print(text)
-                # 修改为自己的想推送的ID
-                post(CHAT_ID, text)
+                if(re.match(REGEX,name,flags=re.IGNORECASE)):
+                    # 文章链接
+                    # print(i)
+                    k = i + 1
+                    # print(k)
+                    url_list = "https://www.hostloc.com/{}".format(href_list[i])
+                    # 作者id链接
+                    url_author = "https://www.hostloc.com/{}".format(author_url[k])
+                    # 时间戳
+                    time_1 = time.strftime("%Y-%m-%d    %H:%M:%S", time.localtime())
+                    date_1 = get_week_day(datetime.datetime.now())
+                    time_2 = time_1 + '    ' + date_1 + '    '
+                    time2 = str(time_2).replace('-', '\\-')
+                    # 获得预览内容
+                    # print(get_content(url_list))
+                    content_2 = mark_down(get_content(url_list))
+                    text = '主        题：' + "***{}***".format(mark_down(name)) + '\n' + '发  布  者：[{0}]({1})'.format(mark_down(author[i + 1]), url_author) + '\n' + '时        间：' + time2 + '\n' + '内容预览：[点击查看——{0}]({1})'.format(content_2, url_list)
+                    print(text)
+                    # 修改为自己的想推送的ID
+                    post(CHAT_ID, text)
+                else:
+                    pass
             else:
                 pass
         else:
@@ -153,21 +155,24 @@ def master_1(r):
             if str(href[2 * i].replace("\r\n", "")) not in hostloc_list:
                 hostloc_list.add(str(href[i * 2].replace("\r\n", "")))
                 name = href[2 * i].replace("\r\n", "")
-                # 转换链接：
-                str_url = href_list[i].replace("forum.php?mod=viewthread&tid=", '').replace("&extra=page%3D1%26filter%3Dauthor%26orderby%3Ddateline&mobile=2", '')
+                if (re.match(REGEX, name, flags=re.IGNORECASE)):
+                    # 转换链接：
+                    str_url = href_list[i].replace("forum.php?mod=viewthread&tid=", '').replace("&extra=page%3D1%26filter%3Dauthor%26orderby%3Ddateline&mobile=2", '')
 
-                url_list = "https://www.hostloc.com/thread-{0}-1-1.html".format(str_url)
-                # 时间戳
-                time_1 = time.strftime("%Y-%m-%d    %H:%M:%S", time.localtime())
-                date_1 = get_week_day(datetime.datetime.now())
-                time_2 = time_1 + '    ' + date_1 + '    '
-                time2 = str(time_2).replace('-', '\\-')
-                # 获得预览内容
-                # print(get_content(url_list))
-                content_2 = mark_down(get_content_1(url_list))
-                text = '主        题：' + "***{}***".format(mark_down(name)) + '\n' + '发  布  者：{0}'.format(mark_down(author[i])) + '\n' + '时        间：' + time2 + '\n' + '内容预览：[点击查看——{0}]({1})'.format(content_2, url_list)
-                print(text)
-                post('-1001427090413', text)
+                    url_list = "https://www.hostloc.com/thread-{0}-1-1.html".format(str_url)
+                    # 时间戳
+                    time_1 = time.strftime("%Y-%m-%d    %H:%M:%S", time.localtime())
+                    date_1 = get_week_day(datetime.datetime.now())
+                    time_2 = time_1 + '    ' + date_1 + '    '
+                    time2 = str(time_2).replace('-', '\\-')
+                    # 获得预览内容
+                    # print(get_content(url_list))
+                    content_2 = mark_down(get_content_1(url_list))
+                    text = '主        题：' + "***{}***".format(mark_down(name)) + '\n' + '发  布  者：{0}'.format(mark_down(author[i])) + '\n' + '时        间：' + time2 + '\n' + '内容预览：[点击查看——{0}]({1})'.format(content_2, url_list)
+                    print(text)
+                    post(CHAT_ID, text)
+                else:
+                    pass
             else:
                 pass
         else:
@@ -215,7 +220,7 @@ headers = {
 url_hostloc = "https://www.hostloc.com/forum.php?mod=forumdisplay&fid=45&filter=author&orderby=dateline"
 
 while True:
-        loadConfig()
+        load_config()
         try:
             # 网站要求js验证(无法预览网页内容）
             cookiestr = getcookies()
@@ -254,12 +259,7 @@ while True:
                 url_hostloc = "https://www.hostloc.com/forum.php?mod=forumdisplay&fid=45&filter=author&orderby=dateline"
                 r = requests.get(url_hostloc, headers=headers)
                 master(r)
-                time.sleep(20)
+                time.sleep(30)
             except Exception:
                 print("网络错误，请稍后重试")
                 time.sleep(120)
-
-
-
-
-

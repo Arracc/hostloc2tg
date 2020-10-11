@@ -45,3 +45,27 @@ fi
 ![](https://s1.ax1x.com/2020/07/20/UfQihF.png)
 
 
+
+ADD
+
+增加关键词过滤　
+
+
+
+使用方法
+
+相关配置在根目录下 .ini 文件中填写：
+
+[telegram]
+
+bot_token = 
+
+chat_id = 　
+
+
+
+[filter]
+
+regex = 包含或排除关键词的正则表达式
+
+
