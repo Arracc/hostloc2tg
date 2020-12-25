@@ -46,26 +46,32 @@ fi
 
 
 
-ADD
+EDIT:
 
-增加关键词过滤　
+	- 去除链接预览
+	
+	- 增加关键词推送
+	
+	- 增加全局关键词过滤
+
+使用方法:
+
+	修改根目录下 .ini 配置文件：
+
+	[telegram]
+	
+	bot_token = 
+
+	chat_id = 　
 
 
+	[filter]
+	
+	exclusion = 排除的关键词，使用|分隔
 
-使用方法
-
-相关配置在根目录下 .ini 文件中填写：
-
-[telegram]
-
-bot_token = 
-
-chat_id = 　
-
-
-
-[filter]
-
-regex = 包含或排除关键词的正则表达式
+	regex = 包含或排除规则组合和关键词正则表达式
+	
+	
+	* exclusion允许为空，当regex规则过于复杂时，可以将部分关键词放入exclusion优先排除
 
 
